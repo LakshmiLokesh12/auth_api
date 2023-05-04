@@ -1,0 +1,12 @@
+require ('dotenv').config();
+
+module.exports={
+    mysql:{
+       prod:{
+           host:"localhost",
+           user:"root",
+           password:"mysql",
+           database:"auth_api"
+       }
+    }
+}
