@@ -1,3 +1,4 @@
+require ('dotenv').config();
 const express = require('express');
 const {generateOTP,
     generateAccessToken,
@@ -14,18 +15,11 @@ app.use(express.json());
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'your_email@gmail.com',
-    pass: 'your_password',
+    user:process.env.EMAIL_USERNAME ,
+    pass: process.env.EMAIL_PASSWORD,
   },
 });
 
-const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  if (token == null) return res.sendStatus(401);
-  verifyToken(token)
-  next()
-};
 
 app.post('/register', (req, res) => {
   const { name, email, password } = req.body;
@@ -34,28 +28,27 @@ app.post('/register', (req, res) => {
   const query= 'INSERT INTO users (name, email, password, otp) VALUES (?, ?, ?, ?)';
    const values=[name, email, password, otp];
   db(query, values, (err, result) => {
+    if(err){
+      res.send(err);
+    }
     res.send(result);
   });
 
-//   db.query(
-//    ,
-//     ,
-//     (err) => {
-//       if (err) throw err;
-//       const mailOptions = {
-//         from: 'your_email@gmail.com',
-//         to: email,
-//         subject: 'OTP Verification',
-//         text: `Your OTP for email verification is: ${otp}`,
-//       };
-//       transporter.sendMail(mailOptions, (error) => {
-//         if (error) throw error;
-//         console.log('OTP sent to email:', email);
-//         res.status(200).send('OTP sent to email');
-//       });
-//     }
-//   );
-});
+
+      const mailOptions = {
+        from: 'lakshmilokesh12@gmail.com',
+        to: email,
+        subject: 'OTP Verification',
+        text: `Your OTP for email verification is: ${otp}`,
+      };
+      transporter.sendMail(mailOptions, (error) => {
+        if (error) throw error;
+        console.log('OTP sent to email:', email);
+        res.status(200).send('OTP sent to email');
+      });
+    }
+  );
+
 
 app.post('/verify', (req, res) => {
     const { email, otp } = req.body;
