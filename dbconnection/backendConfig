@@ -2,11 +2,11 @@ require ('dotenv').config();
 
 module.exports={
     mysql:{
-       prod:{
-           host:"localhost",
-           user:"root",
-           password:"mysql",
-           database:"auth_api"
-       }
+        prod:{
+            host:process.env.HOST,
+            user:process.env.USER,
+            password:process.env.PASSWORD,
+            database:process.env.DATABASE
     }
+}
 }
